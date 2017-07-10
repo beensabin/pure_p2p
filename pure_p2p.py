@@ -5,8 +5,7 @@ import threading
 
 HOST = ''
 PORT = 50007
-connections_ips = []
-connections_sockets = []
+connections = []
 close_program = False
 
 socket.setdefaulttimeout(10)
@@ -27,9 +26,8 @@ def accepter():
                         #print("accept() error: ",sys.exc_info()[0])
                         a=1
                 else:
-                        print('Connected by',addr)
-                        #addr -> connections_ips
-
+                        print('Connected by',addr[0])
+                        connections.append((addr[0],conn))
 
 accepter_thread = threading.Thread(name='accepter', target=accepter)
 #accepter_thread.setDaemon(True)
@@ -37,11 +35,11 @@ accepter_thread.start()
 
 while close_program == False:
         
-        command = input('>>')
+        command = input('>>').split()
         
-        if command == 'connect':
+        if command[0] == 'connect':
                         
-                connect_to_ip = input('connect to (IP): ')
+                connect_to_ip = command[1]
                 connect_to_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
                 try:
@@ -50,10 +48,23 @@ while close_program == False:
                         print('Error connecting to '+connect_to_ip)
                 else:
                         print('Connected to '+connect_to_ip)
-                        connections_ips.append(connect_to_ip)
-                        connections_sockets.append(connect_to_socket)
+                        connections.append((connect_to_ip,connect_to_socket))
+
+        elif command[0] == 'say':
+
+                if len(command) > 2:
+                        
+                        say_to_ip = command[1]
+                        msg = command[2].encode()
+
+                        for i in range(len(connections)):
+                                if connections[i][0] == say_to_ip:
+                                        connections[i][1].send(msg)
+                                        
+                else:
+                        print('Not all the arguments provided.')
                                 
-        elif command == 'exit':
+        elif command[0] == 'exit':
 
                 close_program = True
                 print('Closing threads...')
