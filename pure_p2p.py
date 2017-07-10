@@ -3,28 +3,59 @@ import time
 import sys
 import threading
 
-def main():
-	
-        HOST = ''
-        PORT = 50007
+HOST = ''
+PORT = 50007
+connections_ips = []
+connections_sockets = []
+close_program = False
 
-        #socket.setdefaulttimeout(10)
+socket.setdefaulttimeout(10)
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((HOST,PORT))
-        s.listen(1)
-        try:
-                conn, addr = s.accept()
-        except:
-                print("accept() error: ",sys.exc_info()[0])
-        else:
-                print ('Connected by',addr)
+def accepter():
 
-                while 1:
-                        data = conn.recv(1024).decode()
-                        if not data or data == 'close': break
-                        print(data)
-                
-	
-if __name__ == "__main__":
-	main()
+        global close_program        
+
+        accept_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        accept_socket.bind((HOST,PORT))
+        accept_socket.listen(1)
+        
+        while close_program == False:
+
+                try:
+                        conn, addr = accept_socket.accept()                        
+                except:
+                        #print("accept() error: ",sys.exc_info()[0])
+                        a=1
+                else:
+                        print('Connected by',addr)
+                        #addr -> connections_ips
+
+
+accepter_thread = threading.Thread(name='accepter', target=accepter)
+#accepter_thread.setDaemon(True)
+accepter_thread.start()
+
+while close_program == False:
+        
+        command = input('>>')
+        
+        if command == 'connect':
+                        
+                connect_to_ip = input('connect to (IP): ')
+                connect_to_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+                try:
+                        connect_to_socket.connect((connect_to_ip,PORT))
+                except:
+                        print('Error connecting to '+connect_to_ip)
+                else:
+                        print('Connected to '+connect_to_ip)
+                        connections_ips.append(connect_to_ip)
+                        connections_sockets.append(connect_to_socket)
+                                
+        elif command == 'exit':
+
+                close_program = True
+                print('Closing threads...')
+                accepter_thread.join()
+                print('All threads closed.')
