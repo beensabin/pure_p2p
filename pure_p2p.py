@@ -3,6 +3,8 @@ import time
 import sys
 import threading
 
+#sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 HOST = ''
 PORT = 50007
 connections = []
@@ -49,7 +51,6 @@ def accepter():
         
                         
 accepter_thread = threading.Thread(name='accepter', target=accepter)
-#accepter_thread.setDaemon(True)
 accepter_thread.start()
 
 while close_program == False:
@@ -63,8 +64,8 @@ while close_program == False:
 
                 try:
                         connect_to_socket.connect((connect_to_ip,PORT))
-                except:
-                        print('Error connecting to '+connect_to_ip)
+                except Exception as e:
+                        print('Error connecting to '+connect_to_ip+': '+str(e))
                 else:
                         print('Connected to '+connect_to_ip)
                         connections.append((connect_to_ip,connect_to_socket))
