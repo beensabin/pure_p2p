@@ -1,3 +1,1 @@
-# pure_p2p
-fdsf
-sdfsfd
+# TCP hole punching Python library
