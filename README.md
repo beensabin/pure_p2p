@@ -1,1 +1,1 @@
-# pure_p2p
+# TCP hole punching Python library
