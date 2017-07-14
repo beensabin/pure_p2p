@@ -113,17 +113,26 @@ while close_program == False:
                                 port = int(command[2])
 
                         if port != 0:
-                                        
+
                                 connect_to_ip = command[1]
-                                cont = 0
+                                cont = 1
+                                cont2 = 0
 
-                                while cont <= 10:
+                                while cont <= 11:
 
-                                        print('Trying to connect to '+connect_to_ip+' (Attempt '+str(cont)+' of 10)')
+                                        if cont2 < cont:
+                                                print('Trying to connect to '+connect_to_ip+' (Attempt '+str(cont)+' of 10)')
+                                                cont2 = cont
                                         try:
                                                 c_socket.connect((connect_to_ip,port))
                                         except Exception as e:
-                                                print('Error connecting to '+connect_to_ip+': '+str(e))
+                                                
+                                                if str(e) == 'timed out':
+                                                        print('Error connecting to '+connect_to_ip+': '+str(e))
+                                                        cont += 1
+                                                else:
+                                                        time.sleep(0.5)
+                                                        
                                         else:
                                                 print('Connected to '+connect_to_ip+' (connect command)')
                                                 exists = False
@@ -140,8 +149,8 @@ while close_program == False:
 
                                                 cont = 12
 
-                                        cont = cont + 1
-                                        time.sleep(20)
+                                        #cont = cont + 1
+                                        #time.sleep(20)
                                         
                         else:
                                 print('Command arguments error.')
