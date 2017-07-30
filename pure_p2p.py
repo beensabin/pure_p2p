@@ -148,10 +148,6 @@ while close_program == False:
                                                         recv_threads.append(recv_thread)
 
                                                 cont = 12
-
-                                        #cont = cont + 1
-                                        #time.sleep(20)
-                                        
                         else:
                                 print('Command arguments error.')
                                 
